@@ -1,8 +1,38 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const cors = require("core");
+const cors = require("cors");
 
 const app = express();
+
+
+const db = require("./models");
+/*db.sequelize.sync();*/
+
+db.sequelize.sync({force: true}).then(() => {
+  console.log('Drop and Resync Db');
+  initial();
+});
+
+
+require('./routes/auth.routes')(app);
+require('./routes/user.routes')(app);
+
+function initial() {
+  db.role.create({
+    id: 1,
+    name: "user"
+  });
+ 
+  db.role.create({
+    id: 2,
+    name: "moderator"
+  });
+ 
+  db.role.create({
+    id: 3,
+    name: "admin"
+  });
+}
 
 var corsOptions = {
     origin: "http://localhost:8081"
@@ -18,7 +48,7 @@ var corsOptions = {
   
   // simple route
   app.get("/", (req, res) => {
-    res.json({ message: "Welcome to bezkoder application." });
+    res.json({ message: "Welcome to SonGoku application." });
   });
   
   // set port, listen for requests
